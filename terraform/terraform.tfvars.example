@@ -1,0 +1,14 @@
+# Example Terraform variables file
+# Copy this file to terraform.tfvars and customize the values
+
+resource_group_name  = "rg-my-first-react-app"
+location             = "eastus"
+static_web_app_name  = "swa-my-first-react-app"
+environment          = "dev"
+
+tags = {
+  Project     = "my-first-react-app"
+  ManagedBy   = "Terraform"
+  Environment = "dev"
+  Owner       = "YourName"
+}
