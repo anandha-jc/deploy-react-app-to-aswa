@@ -1,25 +1,29 @@
 name: Deploy to Azure Static Web App
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    types: [opened, synchronize, reopened, closed]
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
+  # pull_request:
+  #   types: [opened, synchronize, reopened, closed]
+  #   branches:
+  #     - main
   workflow_dispatch:
 
 env:
-  NODE_VERSION: '20.x'
+  NODE_VERSION: '24.x'
   TERRAFORM_VERSION: '1.14.1'
   APP_LOCATION: '/'
   OUTPUT_LOCATION: 'dist'
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  ARM_USE_OIDC: true
 
 permissions:
   id-token: write
   contents: read
-  pull-requests: write
+  # pull-requests: write
 
 jobs:
   terraform:
@@ -67,20 +71,20 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: terraform plan -no-color -input=false
-        env:
-          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        # env:
+        #   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        #   ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        #   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        #   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
       - name: Terraform Apply
         id: apply
         run: terraform apply -auto-approve -input=false
-        env:
-          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        # env:
+        #   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        #   ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        #   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        #   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
       - name: Get Terraform Outputs
         id: tf_output
@@ -129,15 +133,15 @@ jobs:
           output_location: ${{ env.OUTPUT_LOCATION }}
           skip_app_build: true
 
-  close_pull_request:
-    name: 'Close Pull Request'
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
-    runs-on: ubuntu-latest
+  # close_pull_request:
+  #   name: 'Close Pull Request'
+  #   if: github.event_name == 'pull_request' && github.event.action == 'closed'
+  #   runs-on: ubuntu-latest
     
-    steps:
-      - name: Close Pull Request
-        id: closepullrequest
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-          action: 'close'
+  #   steps:
+  #     - name: Close Pull Request
+  #       id: closepullrequest
+  #       uses: Azure/static-web-apps-deploy@v1
+  #       with:
+  #         azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+  #         action: 'close'
