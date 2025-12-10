@@ -90,7 +90,7 @@ jobs:
         id: tf_output
         run: |
           API_KEY=$(terraform output -raw static_web_app_api_key)
-          echo "::add-mask::$API_KEY"
+          echo "$API_KEY"
           echo "api_key=$API_KEY" >> $GITHUB_OUTPUT
 
   build_and_deploy:
